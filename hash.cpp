@@ -14,13 +14,20 @@ struct Queue* find(int key, struct Queue* top, struct HashTable** hash, int n) {
     cell = elt(key, n);
     temp = hash[cell];
     if(hash[cell] != NULL) {
-        while(key != temp->data) {
+        while(key != temp->data || temp->next != NULL) {
             temp = temp->next;
+        }
+        if(temp->data == key) {
+            return temp->QueueElem; 
+        }
+        else {
+            temp->next = node_create(key, top, cell, hash);
         }
         return temp->QueueElem; 
     }
     else {
-        node_create(key, top, cell, hash);
+        hash[cell] = node_create(key, top, cell, hash); 
+        return hash[cell]->QueueElem;
     }
 }
 
@@ -33,5 +40,33 @@ struct HashTable* node_create(int key, struct Queue* top, int cell, struct HashT
     new_node = (struct HashTable*)calloc(1, sizeof(struct HashTable));
     hash[cell] = new_node;
     new_node->data = key;
-    new_node->QueueElem = queue_node_create(); //smth creates node in the queue and returns pointer on the new node
+    new_node->QueueElem = queue_node_create(key, top); //smth creates node in the queue and returns pointer on the new node
+    return new_node;
 }
+
+//for testing
+//////////////////////////////////////////////////////////////////////////////////////////
+
+struct Queue* queue_node_create(int key, struct Queue* top) {
+    struct Queue* new_node = 0;
+    new_node = (struct Queue*)calloc(1, sizeof(struct Queue));
+    new_node->key = key;
+    if(top != NULL) {
+        new_node->next = top;
+    }
+    top = new_node;
+    return top;
+}
+
+int test1(void) {
+    int n = 3;
+    hash_create(n);
+    return 1;
+}
+
+int main(void) {
+    printf("test %d passed\n", test1());
+    return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
