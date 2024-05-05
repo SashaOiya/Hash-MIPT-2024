@@ -17,5 +17,19 @@ struct HashTable* node_create(int key, struct Queue* top, int cell, struct HashT
 
 int elt(int key, int n);
 
+//for testing
+//////////////////////////////////////////////////////////////////////////////////////////
+
+struct Queue {
+    struct Queue *next;
+    int key;
+};
+
+struct Queue* queue_node_create(int key, struct Queue* top);
+
+int test1(void);
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
 #endif
 
