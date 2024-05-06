@@ -1,12 +1,10 @@
 digraph G { 
 rankdir = LR;
 node [shape = record];
- "00C41620" -> "00C41620" -> "00C41620" -> "00C41620" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
- "00C41620" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 5674 | next: 15"];
-  "00C41608" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 15 | next: 30 | prev: 5674"];
-  "00C41638" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 30 | next: 0 | prev: 15"];
-  "00C41650" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 30"];
- "00C41620" -> "00C41608";
-"00C41608" -> "00C41638";
-"00C41638" -> "00C41650";
+ "001F1608" -> "001F1608" -> "001F1608" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
+ "001F1608" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 15 | next: 30"];
+  "001F1638" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 30 | next: 0 | prev: 15"];
+  "001F1650" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 30"];
+ "001F1608" -> "001F1638";
+"001F1638" -> "001F1650";
 }

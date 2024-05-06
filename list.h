@@ -50,7 +50,7 @@ List_Error_t List_Ctor    ( struct List_t *list );
 void         List_Dtor    ( struct List_t *list );   // ERROR +
 //List_Error_t List_Realloc ( struct List_t *list );
 List_Error_t List_Insert  ( struct List_t *list, int value );
-//void         List_Delete  ( struct List_t *list, int index );
+void         List_Delete  ( struct List_t *list );
 //int          List_Search  ( struct List_t *list, int search_location );
 
 void Text_Dump  ( struct List_t *list );

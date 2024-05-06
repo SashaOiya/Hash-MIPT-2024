@@ -2,6 +2,8 @@
 
 FILE *logfile = fopen ( "logs/log.html", "w" );
 
+// SWAP
+
 List_Error_t List_Ctor   ( struct List_t *list )
 {
     assert ( list != nullptr );
@@ -44,29 +46,21 @@ List_Error_t List_Insert ( struct List_t *list, int value )
     return OK;
 }
 
-/*void List_Delete ( struct List_t *list, int place )
+void List_Delete ( struct List_t *list )  // name delete hears
 {
-    if ( place == list->tail ) {
-        list->tail = list->prev[list->tail];
-    }
-    if ( place == list->head ) {
-        list->next[0] = list->next[place];
-    }
-    --(list->size);
+    assert ( list != nullptr );
 
-    list->code[place] = 0;
+    --list->list_size;
+    // if list_size = START_LIST_SIZE;
+    list->tail->code = POISON; //
+    list->tail->prev = nullptr;
+    list->tail = list->tail->next;
 
-    int temp_prev = list->prev[place];
-    int temp_next = list->next[place];
-
-    list->next[place] = list->free;
-    list->free        = place;
-    list->prev[place] = FREE_INDEX;
-    list->next[temp_prev] = temp_next;
-    list->prev[temp_next] = temp_prev;
+    free ( list->tail->prev );
+    list->tail->prev = nullptr;
 
     Text_Dump ( list );
-}  */
+}
 
 void Text_Dump ( struct List_t *list )
 {
