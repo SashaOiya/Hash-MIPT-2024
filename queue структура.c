@@ -79,8 +79,4 @@ int main(void) {
     printf("%d\n", x);
 
 
-    x = dequeue(&queue);
-    printf("%d\n", x);
-
-
 }
