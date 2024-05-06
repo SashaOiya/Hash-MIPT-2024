@@ -25,7 +25,7 @@ int main ()
     List_Delete ( &list, 5 );
     List_Insert ( &list, 1, 45 ); */
 
-    //Graph_Dump  ( &list );
+    Graph_Dump  ( &list );
 
     List_Dtor   ( &list );
 

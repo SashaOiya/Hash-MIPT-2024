@@ -55,6 +55,7 @@ List_Error_t List_Insert  ( struct List_t *list, int value );
 
 void Text_Dump  ( struct List_t *list );
 void Graph_Dump ( const struct List_t *list );
+void Graph_Dump_Body ( const struct List_t *list, FILE *dot );
 
 
 #endif      // LIST

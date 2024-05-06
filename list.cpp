@@ -2,20 +2,29 @@
 
 FILE *logfile = fopen ( "logs/log.html", "w" );
 
-void Text_Dump ( struct List_t *list )
+List_Error_t List_Ctor   ( struct List_t *list )
 {
-    // FILE* html_file; // "list_dump.html"
-    // const char *const ....
-    printf ( "\tList tail [%p] :\n"
-             "\t         value : %d"
-             "\t         prev  : [%p]"
-             "\t         next  : [%p]\n", list->tail, list->tail->code, list->tail->prev, list->tail->next );
+    assert ( list != nullptr );
 
-    printf ( "\tList head [%p] :\n"
-             "\t         value : %d"
-             "\t         prev  : [%p]\n", list->head, list->head->code, list->head->prev );
+    list->list_size     = START_BUFFER_SIZE;
 
-    printf ( "size : %d\n\n", list->list_size );
+    list->head = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+    list->tail = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+
+    if ( ! ( list->head && list->tail ) ) {
+        free ( list->tail );
+        free ( list->head );
+
+        return ERR_CALLO;
+    }
+
+    list->tail->code = POISON;
+    list->tail->next = list->head;
+    list->head->prev = list->tail;
+
+    Text_Dump ( list );  // macro
+
+    return OK;
 }
 
 List_Error_t List_Insert ( struct List_t *list, int value )
@@ -24,25 +33,11 @@ List_Error_t List_Insert ( struct List_t *list, int value )
 
     ++list->list_size;
 
-    /*if ( list->head->prev == list->tail ) {
-        //list->head = ( Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-        list->head->code = value;
-        //list->head->prev = list->tail;
-
-        Text_Dump ( list );
-
-        return OK;
-    }*/
-
     list->head->next       = ( Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-    printf ( "list head next [%p]\n", list->head->next );
-    // nullpt r
+    //assert
     list->head->code = value;
     list->head->next->prev = list->head;
-    //printf ( "list head next prev [%p]\n", list->head->next->prev );
     list->head             = list->head->next;
-    //printf ( "list head next prev [%p]\n", list->head->next->prev );
-    //printf ( "list head [%p]\n", list->head );
 
     Text_Dump ( list );
 
@@ -73,59 +68,21 @@ List_Error_t List_Insert ( struct List_t *list, int value )
     Text_Dump ( list );
 }  */
 
-List_Error_t List_Ctor   ( struct List_t *list )
+void Text_Dump ( struct List_t *list )
 {
-    assert ( list != nullptr );
+    // FILE* html_file; // "list_dump.html"
+    // const char *const ....
+    printf ( "\tList tail [%p] :\n"
+             "\t         value : %d"
+             "\t         prev  : [%p]"
+             "\t         next  : [%p]\n", list->tail, list->tail->code, list->tail->prev, list->tail->next );
 
-    list->list_size     = START_BUFFER_SIZE;
-    //list->capacity = list->size - 1 ;
+    printf ( "\tList head [%p] :\n"
+             "\t         value : %d"
+             "\t         prev  : [%p]\n", list->head, list->head->code, list->head->prev );
 
-    list->head = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-    list->tail = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-
-    if ( ! ( list->head && list->tail ) ) {
-        free ( list->tail );
-        free ( list->head );
-
-        return ERR_CALLO;
-    }
-
-    list->tail->code = POISON;
-    list->tail->next = list->head;
-    list->head->prev = list->tail;
-
-    Text_Dump ( list );
-
-    return OK;
+    printf ( "size : %d\n\n", list->list_size );
 }
-
-/*List_Error_t List_Realloc ( struct List_t *list )
-{
-    assert ( list       != nullptr );
-    assert ( list->code != nullptr );
-
-    list->capacity *= REALLOC_CONST;
-
-    list->code = ( elem_t *) realloc ( list->code, list->capacity * sizeof ( list->code[0] ) );
-    list->next = ( int *)    realloc ( list->next, list->capacity * sizeof ( list->next[0] ) );
-    list->prev = ( int *)    realloc ( list->prev, list->capacity * sizeof ( list->prev[0] ) );
-
-    if ( ! ( list->code && list->next && list->prev ) ) {
-        free ( list->code );
-        free ( list->next );
-        free ( list->prev );
-
-        return ERR_REALL;
-    }
-
-    for ( int i = list->capacity / REALLOC_CONST; i < list->capacity; ++i ) {
-        list->code[i] = 0;
-        list->next[i] = i + 1;
-        list->prev[i] = REALLOC_CONST;
-    }
-
-    return OK;
-} */
 
 void Graph_Dump ( const struct List_t *list )
 {
@@ -138,30 +95,7 @@ void Graph_Dump ( const struct List_t *list )
         return ;
     }
 
-    fprintf ( dot, "digraph G { \n"
-                   "rankdir = LR;\n"
-                   "node [shape = record];\n"
-                   " 0 " );
-
-    /*for ( int i = 0; i < list->list->size - 1; ++i ) {
-        fprintf ( dot, "-> %d", i );
-    } */
-
-    fprintf ( dot, "[arrowsize = 0.0, weight = 10000, color = \"#FFFFFF\"];\n" );
-
-    struct Cache_Elem_t *temp_list_elem = list->tail;
-    for ( int i = 0; i < list->list_size - 1; ++i ) {
-        fprintf ( dot, "%d [shape = Mrecord, style = filled, fillcolor = lightpink "
-                       " label = \"idx: %d | data: %d | next: %d | prev: %d\"];\n ",i, i, temp_list_elem->code,
-                                                                                          temp_list_elem->next->code,
-                                                                                          temp_list_elem->prev->code );
-        temp_list_elem = temp_list_elem->next;
-    }
-    temp_list_elem = list->tail;
-    for ( int i = 0; i < list->list_size -1; ++i ) {
-        fprintf ( dot, "%p -> %p;\n", temp_list_elem, temp_list_elem->next );
-        temp_list_elem = temp_list_elem->next;
-    }
+    Graph_Dump_Body ( list, dot );
 
     fprintf ( dot, "}\n" );
     fclose ( dot );
@@ -171,6 +105,45 @@ void Graph_Dump ( const struct List_t *list )
     fprintf( logfile, "<img src=\"tree%d.png\" alt=\"-\" width=\"500\" height=\"600\">\n", file_count);
     sprintf( name, "dot -T png list.dot -o logs/tree%d.png", file_count++ );
     system ( name );
+}
+
+void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
+{
+    assert ( list != nullptr );
+    assert ( dot  != nullptr );
+
+    fprintf ( dot, "digraph G { \n"
+                   "rankdir = LR;\n"
+                   "node [shape = record];\n"
+                   " \"%p\" ", list->tail );
+
+    struct Cache_Elem_t *temp_list_elem = list->tail;
+    for ( int i = 0; i < list->list_size - 1; ++i ) {
+        fprintf ( dot, "-> \"%p\" ", temp_list_elem );
+    }
+
+    fprintf ( dot, "[arrowsize = 0.0, weight = 10000, color = \"#FFFFFF\"];\n" );
+
+    fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
+                   " label = \"tail: %d | next: %d\"];\n ",temp_list_elem, temp_list_elem->code,
+                                                                           temp_list_elem->next->code );
+    temp_list_elem = list->tail->next;
+    for ( int i = 0; i < list->list_size - 2; ++i ) {
+        fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
+                       " label = \"data: %d | next: %d | prev: %d\"];\n ",temp_list_elem, temp_list_elem->code,
+                                                                                          temp_list_elem->next->code,
+                                                                                          temp_list_elem->prev->code );
+        temp_list_elem = temp_list_elem->next;
+    }
+    fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
+                   " label = \"head: %d | prev: %d\"];\n ",temp_list_elem, temp_list_elem->code,
+                                                                           temp_list_elem->prev->code );
+
+    temp_list_elem = list->tail;
+    for ( int i = 0; i < list->list_size - 1; ++i ) {
+        fprintf ( dot, "\"%p\" -> \"%p\";\n", temp_list_elem, temp_list_elem->next );
+        temp_list_elem = temp_list_elem->next;
+    }
 }
 
 void List_Dtor ( struct List_t *list )
