@@ -6,21 +6,27 @@ int main ()
 {
     // Add more colors!!!
     // Max 4 without flags!!!
-    struct List_t list = {};
+    struct Cache_t cache = {};
 
-    if ( List_Ctor ( &list ) ) {
+    if ( Cache_Ctor ( &cache, 10 ) ) {
 
         return -1;  //
-    }// size
+    }
 
-    List_Insert ( &list,  15 );
-    List_Insert ( &list,  30 );
+    List_Insert ( cache.lirs,  15 ); // macro with check
+    List_Insert ( cache.lirs,  30 );
+    List_Insert ( cache.lirs,  50 );
+    //List_Insert ( &list,  60 ); // remove
 
-    Graph_Dump  ( &list );
-    List_Delete ( &list );
+    Cache_Graph_Dump  ( &cache );
+    //List_Delete ( &list );
 
-    Graph_Dump  ( &list );
-    List_Dtor   ( &list );
+    List_Swap ( cache.lirs->tail, cache.lirs->head );
+    //Text_Dump ( &list );
+
+    Cache_Graph_Dump  ( &cache );
+
+    List_Dtor   ( cache.lirs );
 
     return 0;
 }
