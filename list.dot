@@ -1,0 +1,17 @@
+digraph G { 
+rankdir = LR;
+node [shape = record];
+ "00B31660" -> "00B31660" -> "00B31678" -> "00B31690" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
+ "00B31660" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 90 | next: 50"];
+  "00B31678" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 50 | next: 30 | prev: 90"];
+  "00B31690" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 30 | next: 0 | prev: 50"];
+  "00B316A8" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 30"];
+ "00B31660" -> "00B31678";
+"00B31678" -> "00B31690";
+"00B31690" -> "00B316A8";
+digraph G { 
+rankdir = LR;
+node [shape = record];
+ "00B31648" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
+ "00B31648" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 0 "];
+ }

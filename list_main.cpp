@@ -16,12 +16,13 @@ int main ()
     List_Insert ( cache.lirs,  15 ); // macro with check
     List_Insert ( cache.lirs,  30 );
     List_Insert ( cache.lirs,  50 );
-    //List_Insert ( &list,  60 ); // remove
+    List_Insert ( cache.lirs,  90 );
+    List_Delete ( cache.lirs ); // remove
 
     Cache_Graph_Dump  ( &cache );
     //List_Delete ( &list );
 
-    List_Swap ( cache.lirs->tail, cache.lirs->head );
+    List_Swap ( cache.lirs->tail, cache.lirs->head->prev );
     //Text_Dump ( &list );
 
     Cache_Graph_Dump  ( &cache );
