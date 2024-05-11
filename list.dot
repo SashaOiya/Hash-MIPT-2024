@@ -1,17 +1,14 @@
 digraph G { 
 rankdir = LR;
 node [shape = record];
- "00B31660" -> "00B31660" -> "00B31678" -> "00B31690" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
- "00B31660" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 90 | next: 50"];
-  "00B31678" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 50 | next: 30 | prev: 90"];
-  "00B31690" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 30 | next: 0 | prev: 50"];
-  "00B316A8" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 30"];
- "00B31660" -> "00B31678";
-"00B31678" -> "00B31690";
-"00B31690" -> "00B316A8";
-digraph G { 
-rankdir = LR;
-node [shape = record];
- "00B31648" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
- "00B31648" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 0 "];
- }
+ "00BA17E0" -> "00BA17E0" -> "00BA18E8" -> "00BA1768" -> "00BA1870" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
+ "00BA17E0" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 10 | next: 35"];
+  "00BA18E8" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 35 | next: 55 | prev: 10"];
+  "00BA1768" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 55 | next: 95 | prev: 35"];
+  "00BA1870" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "data: 95 | next: 0 | prev: 55"];
+  "00BA1780" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 95"];
+ "00BA17E0" -> "00BA18E8";
+"00BA18E8" -> "00BA1768";
+"00BA1768" -> "00BA1870";
+"00BA1870" -> "00BA1780";
+}

@@ -1,10 +1,7 @@
 #include "list.h"
+#include "log.h"
 
-FILE *logfile = fopen ( "logs/log.html", "w" );
-
-// FILE* html_file; // "list_dump.html"
-    // const char *const ....
-
+static const int DUMP_COUNTER = 100;
 // SWAP
 
 List_Error_t Cache_Ctor ( struct Cache_t *cache, const int given_cache_size )
@@ -49,7 +46,7 @@ List_Error_t List_Insert ( struct List_t *list, int value )
     list->head->next->prev = list->head;
     list->head             = list->head->next;
 
-    List_Text_Dump ( list, "list" );
+    //List_Text_Dump ( list, "list" );
 
     return OK;
 }
@@ -61,8 +58,14 @@ List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir
 
     // tail or head
     if ( ( lir_elem->next == hir_elem && hir_elem->prev == lir_elem ) ||
-         ( lir_elem->prev == hir_elem && hir_elem->next == lir_elem ) ||
-           lir_elem->prev == nullptr || hir_elem->next == nullptr ) {
+         ( lir_elem->prev == hir_elem && hir_elem->next == lir_elem ) ) {
+        elem_t temp_code = lir_elem->code;
+        lir_elem->code = hir_elem->code;
+        hir_elem->code = temp_code;
+
+        return OK;
+    }
+    if ( lir_elem->prev == nullptr ) {
         elem_t temp_code = lir_elem->code;
         lir_elem->code = hir_elem->code;
         hir_elem->code = temp_code;
@@ -129,11 +132,9 @@ void List_Text_Dump ( struct List_t *list, const char *list_name )  // color
     printf ( "size : %d\n\n", list->list_size );
 }
 
-void Cache_Graph_Dump ( const struct Cache_t *cache )
+void Cache_Graph_Dump ( const struct List_t *list )
 {
-    assert ( cache != nullptr );
-
-    static int file_count = 0;
+    assert ( list != nullptr );
 
     FILE *dot = fopen ( "list.dot", "w" );
     if ( !dot ) {
@@ -142,18 +143,16 @@ void Cache_Graph_Dump ( const struct Cache_t *cache )
         return ;
     }
 
-    Graph_Dump_Body ( cache->lirs, dot );
-    //Graph_Dump_Body ( cache->hirs, dot );
-    // size
+    Graph_Dump_Body ( list, dot );
 
     fprintf ( dot, "}\n" );
     fclose ( dot );
 
-    const int SIZE = 100;
-    char name[SIZE] = {};
-    fprintf( logfile, "<img src=\"tree%d.png\" alt=\"-\" width=\"500\" height=\"600\">\n", file_count);
-    sprintf( name, "dot -T png list.dot -o logs/tree%d.png", file_count++ );
-    system ( name );
+    static int file_counter = 0;
+    char command_buffer[DUMP_COUNTER] = {};
+    fprintf( log(), "<img src=\"tree%d.png\" alt=\"-\" width=\"500\" height=\"600\">\n", file_counter );
+    sprintf( command_buffer, "dot -T png list.dot -o logs/tree%d.png", file_counter++ );
+    system ( command_buffer );
 }
 
 void Graph_Dump_Body ( const struct List_t *list, FILE *dot )

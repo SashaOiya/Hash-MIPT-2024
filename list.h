@@ -52,7 +52,7 @@ List_Error_t List_Insert  ( struct List_t *list, int value );
 void         List_Delete  ( struct List_t *list );
 
 void List_Text_Dump ( struct List_t *list, const char *list_name );
-void Cache_Graph_Dump ( const struct Cache_t *cache );
+void Cache_Graph_Dump ( const struct List_t *list );
 void Graph_Dump_Body ( const struct List_t *list, FILE *dot );
 
 List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir_elem );
