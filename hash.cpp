@@ -18,26 +18,34 @@ struct HashTableElem** hash_create(int n) {
     return hash;
 }
 
-struct Queue* find(int key, struct Queue* top, struct HashTableElem** hash, int n) {
+struct HashTableElem* find(int key, struct HashTable* HashTable) {
     int cell = 0;
     struct HashTableElem* temp = 0;
-    cell = elt(key, n);
-    temp = hash[cell];
-    if(hash[cell] != NULL) {
+    cell = elt(key, HashTable->HashSize);
+    temp = HashTable->hash[cell];
+    if(HashTable->hash[cell] != NULL) {
         while(key != temp->key || temp->next != NULL) {
+            if(temp->key == key) {
+            return temp; 
+            }
             temp = temp->next;
         }
-        if(temp->key == key) {
-            return temp->QueueElem; 
-        }
-        else {
-            temp->next = hash_table_elem_create(key, top, cell, hash);
-        }
-        return temp->QueueElem; 
+    }
+    return NULL;
+}
+
+void hash_table_elem_insert(int key, struct HashTable* HashTable, struct Queue* top) {
+    int cell = 0;
+    struct HashTableElem* new_node = 0;
+    cell = elt(key, HashTable->HashSize);
+    new_node = hash_table_elem_create(key, top, HashTable);
+    assert(new_node);
+    if(HashTable->hash[cell] == 0) {
+        HashTable->hash[cell] = new_node;
     }
     else {
-        hash[cell] = hash_table_elem_create(key, top, cell, hash); 
-        return hash[cell]->QueueElem;
+        new_node->next = HashTable->hash[cell];
+        HashTable->hash[cell] = new_node;
     }
 }
 
@@ -45,10 +53,11 @@ int elt(int key, int n) {
     return ((5 * key + 78) % 56) % n;
 }
 
-struct HashTableElem* hash_table_elem_create(int key, struct Queue* top, int cell, struct HashTableElem** hash) {
+struct HashTableElem* hash_table_elem_create(int key, struct Queue* top, struct HashTable* HashTable) {
+    int cell = 0;
+    cell = elt(key, HashTable->HashSize);
     struct HashTableElem* new_node = 0;
     new_node = (struct HashTableElem*)calloc(1, sizeof(struct HashTableElem));
-    hash[cell] = new_node; // тут надо просто создать, прикрепить уже в другом месте и не к ячейке а к концу списка который в ячейке!!!!!!!
     new_node->key = key;
     new_node->QueueElem = queue_node_create(key, top); //smth creates node in the queue and returns pointer on the new node
     return new_node;
