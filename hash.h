@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-//разбить функцию файнд и креэйт
-
 struct HashTable {
     struct HashTableElem** hash;
     int HashSize;
@@ -12,7 +10,7 @@ struct HashTable {
 
 struct HashTableElem {
     struct HashTableElem *next;
-    int key; 
+    int key;
     struct Queue *QueueElem; 
 };
 
@@ -20,13 +18,11 @@ struct HashTable* hash_table_create(int n);
 
 struct HashTableElem** hash_create(int n);
 
-struct Queue* find(int key, struct Queue* top, struct HashTableElem** hash, int n);
+struct HashTableElem* find(int key, struct HashTable* HashTable);
 
-struct HashTableElem* hash_table_elem_create(int key, struct Queue* top, int cell, struct HashTableElem** hash);
+struct HashTableElem* hash_table_elem_create(int key, struct Queue* top, struct HashTable* HashTable);
 
-//hash_table_elem_insert -> create -> ann's create
-
-// возращается адрес на ячейку спика хэш таблицы 
+void hash_table_elem_insert(int key, struct HashTable* HashTable, struct Queue* top);
 
 int elt(int key, int n);
 
