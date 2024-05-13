@@ -2,33 +2,46 @@
 #include "log.h"
 
 static const int DUMP_COUNTER = 100;
-// SWAP
 
 List_Error_t Cache_Ctor ( struct Cache_t *cache, const int given_cache_size )
 {
     assert ( cache!= nullptr );
-
-    cache->lirs = (List_t *)calloc ( 1, sizeof ( List_t ) );
-    cache->hirs = (List_t *)calloc ( 1, sizeof ( List_t ) );
+    assert ( given_cache_size >= 2 * START_BUFFER_SIZE );
 
     cache->cache_size = given_cache_size;
-    cache->lirs->list_size = START_BUFFER_SIZE;
-    cache->hirs->list_size = START_BUFFER_SIZE;
 
-    cache->lirs->tail = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-    cache->hirs->tail = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+    List_Error_t ret_code = List_Ctor ( &(cache->lirs) );
+    if ( ret_code != OK ) {
 
-    if ( !(cache->lirs->tail && cache->hirs->tail) ) {
-        free ( cache->lirs->tail );
-        free ( cache->hirs->tail );
+        return ret_code;
+    }
+    ret_code = List_Ctor ( &(cache->hirs) );
+
+    return ret_code;
+}
+
+List_Error_t List_Ctor ( struct List_t **list )
+{
+    assert ( list != nullptr );
+
+    *list = (List_t *)calloc ( 1, sizeof ( List_t ) );
+    if ( !(*list) ) {
+        free ( *list );
 
         return ERR_CALLO;
     }
 
-    cache->lirs->head = cache->lirs->tail;
-    cache->hirs->head = cache->hirs->tail;
+    (*list)->list_size = START_BUFFER_SIZE;
 
-    //Text_Dump ( list );  // macro
+    (*list)->tail = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+    if ( !((*list)->tail) ) {
+        free ( *list );
+        free ( (*list)->tail );
+
+        return ERR_CALLO;
+    }
+
+    (*list)->head = (*list)->tail;
 
     return OK;
 }
@@ -40,13 +53,17 @@ List_Error_t List_Insert ( struct List_t *list, int value )
 
     ++list->list_size;
 
-    list->head->next       = ( Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-    //assert
+    list->head->next = ( Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+    if ( !(list->head->next) ) {
+        free ( list->head->next );
+
+        return ERR_CALLO;
+    }
+
     list->head->code = value;
     list->head->next->prev = list->head;
     list->head             = list->head->next;
 
-    //List_Text_Dump ( list, "list" );
 
     return OK;
 }
@@ -56,16 +73,15 @@ List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir
     assert ( lir_elem != nullptr );
     assert ( hir_elem != nullptr );
 
-    // tail or head
-    if ( ( lir_elem->next == hir_elem && hir_elem->prev == lir_elem ) ||
-         ( lir_elem->prev == hir_elem && hir_elem->next == lir_elem ) ) {
-        elem_t temp_code = lir_elem->code;
-        lir_elem->code = hir_elem->code;
-        hir_elem->code = temp_code;
+    if ( lir_elem->next == nullptr || hir_elem->next == nullptr ) {
+        printf ( "WARNING : list head\n" );
 
         return OK;
     }
-    if ( lir_elem->prev == nullptr ) {
+
+    if ( ( lir_elem->next == hir_elem && hir_elem->prev == lir_elem ) ||
+         ( lir_elem->prev == hir_elem && hir_elem->next == lir_elem ) ||
+         lir_elem->prev == nullptr || hir_elem->prev == nullptr ) {
         elem_t temp_code = lir_elem->code;
         lir_elem->code = hir_elem->code;
         hir_elem->code = temp_code;
@@ -90,12 +106,10 @@ List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir
 
     free ( temp_list );
 
-    printf ("LOX SWAP\n"); //
-
     return OK;
 }
 
-void List_Delete ( struct List_t *list )  // name delete hears
+void List_Delete ( struct List_t *list )
 {
     assert ( list != nullptr );
 
@@ -132,9 +146,9 @@ void List_Text_Dump ( struct List_t *list, const char *list_name )  // color
     printf ( "size : %d\n\n", list->list_size );
 }
 
-void Cache_Graph_Dump ( const struct List_t *list )
+void Cache_Graph_Dump ( const struct Cache_t *cache )
 {
-    assert ( list != nullptr );
+    assert ( cache != nullptr );
 
     FILE *dot = fopen ( "list.dot", "w" );
     if ( !dot ) {
@@ -143,7 +157,12 @@ void Cache_Graph_Dump ( const struct List_t *list )
         return ;
     }
 
-    Graph_Dump_Body ( list, dot );
+    fprintf ( dot, "digraph G { \n"
+                   "rankdir = LR;\n"
+                   "node [shape = record];\n" );
+
+    Graph_Dump_Body ( cache->lirs, dot );
+    Graph_Dump_Body ( cache->hirs, dot );
 
     fprintf ( dot, "}\n" );
     fclose ( dot );
@@ -160,19 +179,13 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
     assert ( list != nullptr );
     assert ( dot  != nullptr );
 
-    // tail head
-
-    fprintf ( dot, "digraph G { \n"
-                   "rankdir = LR;\n"
-                   "node [shape = record];\n"
-                   " \"%p\" ", list->tail );
+    fprintf ( dot, " \"%p\" ", list->tail );
 
     struct Cache_Elem_t *temp_list_elem = list->tail;
     for ( int i = 0; i < list->list_size - 1; ++i ) {
         fprintf ( dot, "-> \"%p\" ", temp_list_elem );
         temp_list_elem = temp_list_elem->next;
     }
-    printf ( "LOX DUMP\n" ); //
 
     fprintf ( dot, "[arrowsize = 0.0, weight = 10000, color = \"#FFFFFF\"];\n" );
 
@@ -185,7 +198,7 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
     fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
                    " label = \"tail: %d | next: %d\"];\n ",list->tail, list->tail->code,
                                                                        list->tail->next->code );
-    printf ( "LOX DUMP\n" ); //
+
     temp_list_elem = list->tail->next;
     for ( int i = 0; i < list->list_size - 2; ++i ) {
         fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
@@ -194,7 +207,7 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
                                                                                           temp_list_elem->prev->code );
         temp_list_elem = temp_list_elem->next;
     }
-    printf ( "LOX DUMP\n" );//
+
     fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
                    " label = \"head: %d | prev: %d\"];\n ",temp_list_elem, temp_list_elem->code,
                                                                            temp_list_elem->prev->code );
@@ -203,7 +216,15 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
         fprintf ( dot, "\"%p\" -> \"%p\";\n", temp_list_elem, temp_list_elem->next );
         temp_list_elem = temp_list_elem->next;
     }
-    printf ( "LOX DUMP\n" );//
+}
+
+void Cache_Dtor ( struct Cache_t *cache )
+{
+    assert ( cache != nullptr );
+
+    cache->cache_size = 0;
+    List_Dtor ( cache->lirs );
+    List_Dtor ( cache->hirs );
 }
 
 void List_Dtor ( struct List_t *list )
@@ -211,7 +232,7 @@ void List_Dtor ( struct List_t *list )
     assert ( list != nullptr );
 
     Cache_Elem_t *temp_list_elem = list->tail;
-    for ( int i = 0; i < list->list_size -1; ++i ) {   // nullptr
+    for ( int i = 0; i < list->list_size -1; ++i ) {
         temp_list_elem = temp_list_elem->next;
         free (temp_list_elem->prev );
     }

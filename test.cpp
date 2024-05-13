@@ -19,6 +19,20 @@ void Cache_Test ()
     else {
         printf ( "FALSE\n" );
     }
+    ret_val = Cache_Text_3 ( &cache, test.test_3 );
+    if ( ret_val ==  true ) {
+        printf ( "TRUE\n" );
+    }
+    else {
+        printf ( "FALSE\n" );
+    }
+    ret_val = Cache_Text_4 ( &cache, test.test_4 );
+    if ( ret_val ==  true ) {
+        printf ( "TRUE\n" );
+    }
+    else {
+        printf ( "FALSE\n" );
+    }
 }
 
 bool Cache_Text_2 ( struct Cache_t *cache, const struct Test_Node_t *test )
@@ -48,8 +62,7 @@ bool Cache_Text_2 ( struct Cache_t *cache, const struct Test_Node_t *test )
     }
     ret_val = Cache_Test_Check ( cache->hirs, &(test[4]) );
 
-    List_Dtor ( cache->lirs ); ///
-    List_Dtor ( cache->hirs );
+    Cache_Dtor ( cache );
 
     return ret_val;
 }
@@ -57,6 +70,7 @@ bool Cache_Text_2 ( struct Cache_t *cache, const struct Test_Node_t *test )
 bool Cache_Text_1 ( struct Cache_t *cache, const struct Test_Node_t *test )
 {
     assert ( cache != nullptr );
+    assert ( test  != nullptr );
 
     Cache_Ctor ( cache, 10 );
     // error
@@ -69,7 +83,52 @@ bool Cache_Text_1 ( struct Cache_t *cache, const struct Test_Node_t *test )
 
     bool ret_val = Cache_Test_Check ( cache->lirs, test );
 
-    List_Dtor ( cache->lirs ); ///
+    Cache_Dtor ( cache );
+
+    return ret_val;
+}
+
+bool Cache_Text_3 ( struct Cache_t *cache, const struct Test_Node_t *test )
+{
+    assert ( cache != nullptr );
+    assert ( test  != nullptr );
+
+    Cache_Ctor ( cache, 10 );
+    // error
+
+    List_Insert ( cache->lirs,  10 ); // macro with check
+    List_Insert ( cache->lirs,  30 );
+    List_Insert ( cache->lirs,  50 );
+    List_Insert ( cache->lirs,  90 );
+    List_Insert ( cache->hirs,  15 );
+    List_Insert ( cache->hirs,  35 );
+    List_Insert ( cache->hirs,  55 );
+    List_Insert ( cache->hirs,  95 );
+
+    List_Swap ( cache->lirs->tail, cache->hirs->tail );
+
+    bool ret_val = Cache_Test_Check ( cache->lirs, test );
+
+    Cache_Dtor ( cache );
+
+    return ret_val;
+}
+
+bool Cache_Text_4 ( struct Cache_t *cache, const struct Test_Node_t *test )
+{
+    assert ( cache != nullptr );
+    assert ( test  != nullptr );
+
+    Cache_Ctor ( cache, 10 );
+    // error
+    List_Insert ( cache->lirs,  10 );
+    List_Insert ( cache->hirs,  15 );
+
+    List_Swap ( cache->lirs->tail, cache->hirs->tail );
+
+    bool ret_val = Cache_Test_Check ( cache->lirs, test );
+
+    Cache_Dtor ( cache );
 
     return ret_val;
 }

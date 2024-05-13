@@ -47,15 +47,19 @@ enum List_Error_t {
 };
 
 List_Error_t Cache_Ctor ( struct Cache_t *cache, const int given_cache_size );
-void         List_Dtor    ( struct List_t *list );   // ERROR +
+List_Error_t List_Ctor ( struct List_t **list );
+
 List_Error_t List_Insert  ( struct List_t *list, int value );
 void         List_Delete  ( struct List_t *list );
 
 void List_Text_Dump ( struct List_t *list, const char *list_name );
-void Cache_Graph_Dump ( const struct List_t *list );
+void Cache_Graph_Dump ( const struct Cache_t *cache );
 void Graph_Dump_Body ( const struct List_t *list, FILE *dot );
 
 List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir_elem );
+
+void List_Dtor  ( struct List_t *list );   // ERROR +
+void Cache_Dtor ( struct Cache_t *cache );
 
 
 #endif      // LIST
