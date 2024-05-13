@@ -1,15 +1,12 @@
 #ifndef LIST
 #define LIST
 
-#include <stdio.h>            // ERROR +
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <cstring>
 
 const int POISON = 5674;
-const int FREE_INDEX = -1;
-const int REALLOC_CONST = 2;
-const int FIRST_FREE_ELEM = 1;
 const int START_BUFFER_SIZE = 1;
 
 typedef int elem_t;
@@ -30,8 +27,8 @@ struct Cache_Elem_t {
 
 struct List_t {
     int list_size = 0;
-    Cache_Elem_t *tail = nullptr;// = FIRST_FREE_ELEM; /* first non poison element */
-    Cache_Elem_t *head = nullptr;// = FIRST_FREE_ELEM;
+    Cache_Elem_t *tail = nullptr;
+    Cache_Elem_t *head = nullptr;
 };
 
 struct Cache_t {
@@ -47,18 +44,18 @@ enum List_Error_t {
 };
 
 List_Error_t Cache_Ctor ( struct Cache_t *cache, const int given_cache_size );
-List_Error_t List_Ctor ( struct List_t **list );
+List_Error_t List_Ctor  ( struct List_t **list );
 
-List_Error_t List_Insert  ( struct List_t *list, int value );
-void         List_Delete  ( struct List_t *list );
+void         List_Delete ( struct List_t *list );
+List_Error_t List_Insert ( struct List_t *list, int value );
+List_Error_t List_Swap   ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir_elem );
 
-void List_Text_Dump ( struct List_t *list, const char *list_name );
+void List_Text_Dump   ( struct List_t *list, const char *list_name );
 void Cache_Graph_Dump ( const struct Cache_t *cache );
-void Graph_Dump_Body ( const struct List_t *list, FILE *dot );
+void Graph_Dump_Body  ( const struct List_t  *list, FILE *dot );
 
-List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir_elem );
 
-void List_Dtor  ( struct List_t *list );   // ERROR +
+void List_Dtor  ( struct List_t  *list  );
 void Cache_Dtor ( struct Cache_t *cache );
 
 

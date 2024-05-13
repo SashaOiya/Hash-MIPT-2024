@@ -28,10 +28,12 @@ struct List_Test_t {
 };
 
 void Cache_Test ();
+
 bool Cache_Text_1 ( struct Cache_t *cache, const struct Test_Node_t *test );
 bool Cache_Text_2 ( struct Cache_t *cache, const struct Test_Node_t *test );
-bool Cache_Test_Check ( struct List_t *cache, const struct Test_Node_t *test );
 bool Cache_Text_3 ( struct Cache_t *cache, const struct Test_Node_t *test );
 bool Cache_Text_4 ( struct Cache_t *cache, const struct Test_Node_t *test );
+
+bool Cache_Test_Check ( struct List_t *cache, const struct Test_Node_t *test );
 
 #endif  // LIST_TEST
