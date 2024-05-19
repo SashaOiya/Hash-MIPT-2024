@@ -40,27 +40,5 @@ void hash_dtor(struct HashTable* HashTable);
 
 void hash_list_dtor(struct HashTableElem* top);
 
-//for testing
-//////////////////////////////////////////////////////////////////////////////////////////
-
-struct Queue {
-    struct QueueElem* top;
-};
-
-struct QueueElem {
-    struct QueueElem *next;
-    int key;
-};
-
-struct QueueElem* queue_node_create(int key, struct Queue* top);
-
-int test1(void);
-
-int test2(void);
-
-int test3(void);
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
 #endif
 
