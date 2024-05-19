@@ -391,7 +391,7 @@ int test9(void) { //tests destructors
 } 
 
 int main(void) {
-    /* printf("test %d passed\n", test1());
+    printf("test %d passed\n", test1());
     printf("--------------------------------------\n");
     printf("test %d passed\n", test2());
     printf("--------------------------------------\n");
@@ -406,7 +406,7 @@ int main(void) {
     printf("test %d passed\n", test7());
     printf("--------------------------------------\n"); 
     printf("test %d passed\n", test8());
-    printf("--------------------------------------\n"); */
-    printf("test %d passed\n", test8());
+    printf("--------------------------------------\n");
+    printf("test %d passed\n", test9());
     return 0;
 }
