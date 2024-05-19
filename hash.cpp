@@ -104,7 +104,7 @@ void hash_list_dtor(struct HashTableElem* top) {
 //for testing
 //////////////////////////////////////////////////////////////////////////////////////////
 
-struct Queue* queue_node_create(int key, struct Queue* Queue) {
+struct QueueElem* queue_node_create(int key, struct Queue* Queue) {
     struct QueueElem* new_node = 0;
     new_node = (struct QueueElem*)calloc(1, sizeof(struct QueueElem));
     new_node->key = key;
@@ -112,7 +112,7 @@ struct Queue* queue_node_create(int key, struct Queue* Queue) {
         new_node->next = Queue->top;
     }
     Queue->top = new_node;
-    return Queue;
+    return Queue->top;
 }
 
 int test1(void) { //tests function hash_table_create and hash_create;
@@ -176,7 +176,7 @@ int test3(void) { //tests hash_table_elem_insert
             printf("cache elem %p\n", HashTable->hash[i]->CacheElem);
             printf("next %p\n", HashTable->hash[i]->next);
             printf("prev %p\n", HashTable->hash[i]->prev);
-            printf("queue elem %p\n", HashTable->hash[i]->QueueElem->top);
+            printf("queue elem %p\n", HashTable->hash[i]->QueueElem);
             printf("recency %d\n", HashTable->hash[i]->recency);
             printf("!!!!!!!!!!!!!!!!!!!!!!!!\n");
         }
@@ -208,7 +208,7 @@ int test4(void) { //tests hash_table_elem_insert
             printf("cache elem %p\n", HashTable->hash[i]->CacheElem);
             printf("next %p\n", HashTable->hash[i]->next);
             printf("prev %p\n", HashTable->hash[i]->prev);
-            printf("queue elem %p\n", HashTable->hash[i]->QueueElem->top);
+            printf("queue elem %p\n", HashTable->hash[i]->QueueElem);
             printf("recency %d\n", HashTable->hash[i]->recency);
             printf("!!!!!!!!!!!!!!!!!!!!!!!!\n");
         }
@@ -246,13 +246,13 @@ int test5(void) { //tests hash_table_elem_insert
                 printf("cache elem %p\n", hashelem->next->CacheElem);
                 printf("next %p\n", hashelem->next->next);
                 printf("prev %p\n", hashelem->next->prev);
-                printf("queue elem %p\n", hashelem->next->QueueElem->top);
+                printf("queue elem %p\n", hashelem->next->QueueElem);
                 printf("recency %d\n", hashelem->next->recency);
                 printf("<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
                 hashelem = hashelem->next;
             }
             printf("prev %p\n", HashTable->hash[i]->prev);
-            printf("queue elem %p\n", HashTable->hash[i]->QueueElem->top);
+            printf("queue elem %p\n", HashTable->hash[i]->QueueElem);
             printf("recency %d\n", HashTable->hash[i]->recency);
             printf("!!!!!!!!!!!!!!!!!!!!!!!!\n");
         }
@@ -294,13 +294,13 @@ int test6(void) { //tests hash_table_elem_insert
                 printf("cache elem %p\n", hashelem->next->CacheElem);
                 printf("next %p\n", hashelem->next->next);
                 printf("prev %p\n", hashelem->next->prev);
-                printf("queue elem %p\n", hashelem->next->QueueElem->top);
+                printf("queue elem %p\n", hashelem->next->QueueElem);
                 printf("recency %d\n", hashelem->next->recency);
                 printf("<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
                 hashelem = hashelem->next;
             }
             printf("prev %p\n", HashTable->hash[i]->prev);
-            printf("queue elem %p\n", HashTable->hash[i]->QueueElem->top);
+            printf("queue elem %p\n", HashTable->hash[i]->QueueElem);
             printf("recency %d\n", HashTable->hash[i]->recency);
             printf("!!!!!!!!!!!!!!!!!!!!!!!!\n");
         }
