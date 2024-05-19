@@ -1,4 +1,134 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "queue.h"
+#include "hashtable.h"
+
+enum {
+    NON_RESIDENT,
+    RESIDENT,
+};
+
+enum {
+    HIR,
+    LIR,
+};
 
 
+struct QueueElem {
+    int key;
+    struct QueueElem* next;
+    struct QueueElem* prev;
+    int recency; // resedent or not_resident
+    int status;  //hir or lir
+};
+
+struct Queue {
+    struct QueueElem* head;
+    struct QueueElem* tail;
+};
+
+
+void enqueue(struct Queue* queue, int key) {
+
+    struct QueueElem* new_node = 0;
+    new_node = (struct QueueElem*)calloc(1, sizeof(struct QueueElem));
+    assert(new_node);
+    new_node -> key = key;
+    new_node->next = NULL;
+
+    if (queue->tail == NULL) {
+
+
+        queue->head = new_node;
+        queue->tail = new_node;
+
+
+    } else {
+        queue->tail->next = new_node;
+
+        new_node->prev = queue->tail;
+
+        queue->tail = new_node;
+    }
+}
+
+void dequeue(struct Queue* queue) {
+    if (queue->head == NULL) {
+        return;
+    }
+
+    struct QueueElem* temp = queue->head;
+    queue->head = temp->next;
+
+    if (queue->head == NULL) {
+        queue->tail = NULL;
+    } else {
+        queue->head->prev = NULL;
+    }
+
+    free(temp);
+}
+
+void lift_queue_element(struct Queue* queue, struct QueueElem* element) {
+    if (element == queue->head) {
+        return;
+    }
+
+    if (element == queue->tail) {
+
+        queue->tail = element->prev;
+        element->prev->next = NULL;
+
+
+    } else {
+
+        element->prev->next = element->next;
+        element->next->prev = element->prev;
+
+    }
+
+    element->prev = NULL;
+
+    element->next = queue->head;
+
+    queue->head->prev = element;
+    queue->head = element;
+}
+
+void process_element(struct QueueElem* qes, struct Queue* queue, struct HashTable* hashtable) {
+
+    if (qes->recency) {
+        if (qes->elem == queue->head) {
+            dequeue(queue);
+        } else if (qes->elem == queue->tail) {
+
+            queue->tail = qes->elem->prev;
+            qes->elem->prev->next = NULL;
+            free(qes->elem);
+
+        } else {
+
+            qes->elem->prev->next = qes->elem->next;
+            qes->elem->next->prev = qes->elem->prev;
+            free(qes->elem);
+
+        }
+    } else {
+        delete_hash_table_elem(hashtable, qes->elem->key);
+
+        if (qes->elem == queue->head) {
+            dequeue(queue);
+
+        } else if (qes->elem == queue->tail) {
+            queue->tail = qes->elem->prev;
+            qes->elem->prev->next = NULL;
+            free(qes->elem);
+
+
+        } else {
+            qes -> elem->prev->next = qes->elem->next;
+            qes->elem->next->prev = qes->elem->prev;
+            free(qes->elem);
+        }
+    }
+}
