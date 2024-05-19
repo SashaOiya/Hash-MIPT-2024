@@ -8,6 +8,7 @@ struct HashTable* hash_table_create(int n) {
     struct HashTableElem** check = 0;
     struct HashTable* HashTable = 0;
     HashTable = (struct HashTable*)calloc(1, sizeof(struct HashTable));
+    assert(HashTable);
     check = hash_create(n);
     assert(check);
     HashTable->hash = check;
@@ -68,6 +69,7 @@ struct HashTableElem* hash_table_elem_create(int key, struct Queue* Queue, struc
     cell = elt(key, HashTable->HashSize);
     struct HashTableElem* new_node = 0;
     new_node = (struct HashTableElem*)calloc(1, sizeof(struct HashTableElem));
+    assert(new_node);
     new_node->key = key;
     new_node->recency = RESIDENT;
     new_node->QueueElem = queue_node_create(key, Queue); //smth creates node in the queue and returns pointer on the new node
@@ -89,6 +91,7 @@ void hash_dtor(struct HashTable* HashTable) {
     for(int i = 0; i < HashTable->HashSize; i++) {
         if(HashTable->hash[i] != NULL) {
             hash_list_dtor(HashTable->hash[i]);
+            HashTable->hash[i] = NULL;
         }
     }
     free(HashTable->hash);
@@ -99,10 +102,9 @@ void hash_list_dtor(struct HashTableElem* top) {
     while(top->next != NULL) {
         top = top->next;
     }
-    top = top->prev;
     while(top->prev != NULL) {
         free(top->next);
         top = top->prev;
-    }
+        }
     free(top);
 }
