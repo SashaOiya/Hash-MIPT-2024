@@ -27,14 +27,19 @@ struct HashTableElem* find(int key, struct HashTable* HashTable) {
     cell = elt(key, HashTable->HashSize);
     temp = HashTable->hash[cell];
     if(HashTable->hash[cell] != NULL) {
-        while(key != temp->key || temp->next != NULL) {
-            if(temp->key == key) {
-            return temp; 
-            }
+        while(temp->key != key && temp->next != NULL) {
             temp = temp->next;
         }
+        if(temp->key == key) {
+            return temp; 
+        }
+        else {
+            return NULL;
+        }
     }
-    return NULL;
+    else {
+        return NULL;
+    }
 }
 
 void hash_table_elem_insert(int key, struct HashTable* HashTable, struct Queue* Queue) {
@@ -309,6 +314,60 @@ int test6(void) { //tests hash_table_elem_insert
     return 6;
 } 
 
+int test7(void) { //tests find
+    int key1 = 45;
+    int key2 = 77;
+    int key3 = 71;
+    int key4 = 84;
+    int n = 4;
+    struct HashTableElem* res1 = 0;
+    struct HashTableElem* res2 = 0;
+    struct Queue* Queue = 0;
+    struct HashTableElem* hashelem = 0;
+    Queue = (struct Queue*)calloc(1, sizeof(struct Queue));
+    struct HashTable* HashTable = hash_table_create(n);
+
+    hash_table_elem_insert(key1, HashTable, Queue);
+    hash_table_elem_insert(key2, HashTable, Queue);
+    hash_table_elem_insert(key3, HashTable, Queue);
+    hash_table_elem_insert(key4, HashTable, Queue);
+
+    printf("Hash table pointer %p\n", HashTable);
+    printf("Hash pointer %p\n", HashTable->hash);
+    printf("size of hash = %d\n", HashTable->HashSize);
+    for(int i = 0; i < n; i++) {
+        hashelem = HashTable->hash[i];
+        printf("[%p]\n", HashTable->hash[i]);
+        if(HashTable->hash[i] != NULL) {
+            printf("!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            printf("key %d\n", HashTable->hash[i]->key);
+            printf("cache elem %p\n", HashTable->hash[i]->CacheElem);
+            printf("next %p\n", HashTable->hash[i]->next);
+            while(hashelem->next != NULL) {
+                printf("<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+                printf("key %d\n", hashelem->next->key);
+                printf("cache elem %p\n", hashelem->next->CacheElem);
+                printf("next %p\n", hashelem->next->next);
+                printf("prev %p\n", hashelem->next->prev);
+                printf("queue elem %p\n", hashelem->next->QueueElem);
+                printf("recency %d\n", hashelem->next->recency);
+                printf("<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+                hashelem = hashelem->next;
+            }
+            printf("prev %p\n", HashTable->hash[i]->prev);
+            printf("queue elem %p\n", HashTable->hash[i]->QueueElem);
+            printf("recency %d\n", HashTable->hash[i]->recency);
+            printf("!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        }
+    } 
+    res1 = find(39, HashTable);
+    res2 = find(45, HashTable);
+
+    printf("<%p>\n<%p>\n", res1, res2);
+
+    return 7;
+} 
+
 int main(void) {
     /* printf("test %d passed\n", test1());
     printf("--------------------------------------\n");
@@ -319,8 +378,10 @@ int main(void) {
     printf("test %d passed\n", test4());
     printf("--------------------------------------\n");
     printf("test %d passed\n", test5());
-    printf("--------------------------------------\n"); */
+    printf("--------------------------------------\n"); 
     printf("test %d passed\n", test6());
+    printf("--------------------------------------\n"); */
+    printf("test %d passed\n", test7());
     return 0;
 }
 
