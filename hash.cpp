@@ -6,10 +6,12 @@
 struct HashTable* hash_table_create(int n) {
     struct HashTableElem** check = 0;
     struct HashTable* HashTable = 0;
+    HashTable = (struct HashTable*)calloc(1, sizeof(struct HashTable));
     check = hash_create(n);
     assert(check);
     HashTable->hash = check;
     HashTable->HashSize = n;
+    return HashTable;
 }
 
 struct HashTableElem** hash_create(int n) {
@@ -113,24 +115,29 @@ struct Queue* queue_node_create(int key, struct Queue* Queue) {
     return Queue;
 }
 
-int test1(void) {
+int test1(void) { //tests function hash_table_create and hash_create;
     int n = 3;
-    struct HashTableElem** res = hash_create(n);
-    printf("%p\n", res);
+    struct HashTable* res = hash_table_create(n);
+    printf("Hash table pointer %p\n", res);
+    printf("Hash pointer %p\n", res->hash);
+    printf("size of hash = %d\n", res->HashSize);
+    for(int i = 0; i < n; i++) {
+        printf("[%p]\n", res->hash[i]);
+    }
     return 1;
 }
 
-int test2(void) {
+/* int test2(void) { //tests function hash_table_elem create
 
-}
+} */
 
-int test3(void) {
+/* int test3(void) {
     int n = 1;
     struct HashTableElem** res = hash_create(n);
     find(1);
     find(1);
 
-}
+} */
 
 int main(void) {
     printf("test %d passed\n", test1());
