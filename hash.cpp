@@ -117,19 +117,43 @@ struct Queue* queue_node_create(int key, struct Queue* Queue) {
 
 int test1(void) { //tests function hash_table_create and hash_create;
     int n = 3;
-    struct HashTable* res = hash_table_create(n);
-    printf("Hash table pointer %p\n", res);
-    printf("Hash pointer %p\n", res->hash);
-    printf("size of hash = %d\n", res->HashSize);
+    struct HashTable* HashTable = hash_table_create(n);
+    printf("Hash table pointer %p\n", HashTable);
+    printf("Hash pointer %p\n", HashTable->hash);
+    printf("size of hash = %d\n", HashTable->HashSize);
     for(int i = 0; i < n; i++) {
-        printf("[%p]\n", res->hash[i]);
+        printf("[%p]\n", HashTable->hash[i]);
     }
     return 1;
 }
 
-/* int test2(void) { //tests function hash_table_elem create
+int test2(void) { //tests function hash_table_elem create
+    int key = 23;
+    int n = 4;
+    struct Queue* Queue = 0;
+    struct HashTableElem* hashelem = 0;
+    Queue = (struct Queue*)calloc(1, sizeof(struct Queue));
+    struct HashTable* HashTable = hash_table_create(n);
 
-} */
+    hashelem = hash_table_elem_create(key, Queue, HashTable);
+
+    printf("Hash table pointer %p\n", HashTable);
+    printf("Hash pointer %p\n", HashTable->hash);
+    printf("size of hash = %d\n", HashTable->HashSize);
+    for(int i = 0; i < n; i++) {
+        printf("[%p]\n", HashTable->hash[i]);
+    }
+
+    printf("Hash elem pointer %p\n", hashelem);
+    printf("key %d\n", hashelem->key);
+    printf("cache elem %p\n", hashelem->CacheElem);
+    printf("next %p\n", hashelem->next);
+    printf("prev %p\n", hashelem->prev);
+    printf("queue elem %p\n", hashelem->QueueElem);
+    printf("recency %d\n", hashelem->recency);
+
+    return 2;
+} 
 
 /* int test3(void) {
     int n = 1;
@@ -141,6 +165,8 @@ int test1(void) { //tests function hash_table_create and hash_create;
 
 int main(void) {
     printf("test %d passed\n", test1());
+    printf("--------------------------------------\n");
+    printf("test %d passed\n", test2());
     return 0;
 }
 
