@@ -41,7 +41,7 @@ int process_request(struct LIRSCache* LIRSCache, int request)
     struct HashTAbleElem* tmph;//accepts pointer to the block (hash table element) that will be processed
     
     assert(LIRSCache->HashTable != nullptr);
-    tmph = find(request, LIRSCache->HashTable; 
+    tmph = find(request, LIRSCache->HashTable); 
 
     if(tmph != nullptr)
     {
@@ -49,50 +49,60 @@ int process_request(struct LIRSCache* LIRSCache, int request)
        if(tmph->QueueElem != nullptr && tmph->QueueElem->state == LIR)
        {
            lift_queue_element(LIRSCache->Queue, tmph); //advanced function "enqueue()"
-           
            if(tmph->QueueElem == LIRSCache->Queue->bottom)
                queue_pruning(); //"pruning queue until there is a LIR at the bottom"
 
            ++cachehit;
        } 
-
                    //UPON ACCECCING AN HIR RESIDENT BLOCK
        if(tmph->QueueElem->state == HIR && tmph->recency == RESIDENT)
        {   
            chahging_state_and_pruning(LIRSCache, tmph);
            ++cachehit;
        }
-
                    //UPON ACCECCING AN HIR NON-RESIDENT BLOCK
        if(tmph->QueueElem->state == HIR && tmph->recency == NON_RESIDENT)
        {
            if(tmph->QueueElem != nullptr)
            {
-               struct HashTAbleElem* tmplast; //pointer to the tail HIR element in the HIR list 
-
-               tmplast = LIRSCache->CacheList->Hirs->tail;
-               tmplast->recency = NON_RESIDENT;
-                   
-               List_Delete(LIRSCache->CacheList->Hirs);
-               tmplast->ListElem = nullptr;
+               delete_last_element_from_list(LIRSCache);
 
                insert_list_element(LIRSCache->CacheList->Hirs, tmph->ListElem);
                lift_queue_element(LIRSCache->Queue, tmph);
-
                chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTAbleElem* tmph);
            }
        }
     }
 
-    if(tmph == nullptr)
+    else if(tmph == nullptr)
     {
-        create_hash_table_elem();
-        //add processing of this case
+        struct HashTableElem* newelem;
+        newelem = create_hash_table_elem(request, LIRSCache->Queue, LIRSCache->HashTable);
+
+        if((LIRSCache->CacheList->Lirs->list_size) < (LIRSCache->CacheList->cache_size) - (LIRSCache->CacheList->Hirs->list_size))
+        {    
+            List_Insert(LIRSCache->CacheList->Lirs, request);
+            newelem->ListElem = LIRSCache->CacheList->Lirs->head;
+            newelem->recency = LIR;
+            ++LIRSCache->CacheList->Lirs->list_size;
+        }
+        else  
+        {
+            if((LIRSCache->CacheList->Hirs->list_size) < (LIRSCache->CacheList->cache_size) - (LIRSCache->CacheList->Lirs->list_size)
+                ++LIRSCache->CacheList->Hirs->list_size;
+            else
+                delete_last_element_from_list(LIRSCache);
+                
+            List_Insert(LIRSCache->CacheList->Lirs, request);
+            newelem->ListElem = LIRSCache->CacheList->Hirs->head;
+            newelem->recency = HIR;     
+        }
+        
     }
+    else
+        cachehit = -1; //error
 
-
-
-
+    assert(cachehit != -1);
     return cachehit;
 }
 
@@ -100,11 +110,9 @@ void chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTAbleEle
 {
     if(tmph->QueueElem != nullptr)
         {
-            lift_queue_element(LIRSCache->Queue, tmph);// place it on the top of queue 
+            lift_queue_element(LIRSCache->Queue, tmph); // place it on the top of queue 
             tmph->QueueElem->state == LIR; //states of block is stored in QueueElem and HashTableElem and they are equal
             tmph->state == LIR;
-            
-           //добавить в объявление HashTAbleElem указатель на элемент в CacheList->Hirs/Lirs или на nullptr в противном случае
         
             snatch_list_element(LIRSCache->CacheList->Hirs, tmph->ListElem);//removes the specified element from the specified list
             insert_list_element(LIRSCache->CacheList->Lirs, tmph->ListElem);
@@ -131,3 +139,12 @@ void chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTAbleEle
         }
 }
 
+void delete_last_element_from_list(struct LIRSCashe* LIRSCache);
+{
+    struct HashTAbleElem* tmplast; //pointer to the tail HIR element in the HIR list 
+    tmplast = LIRSCache->CacheList->Hirs->tail;
+    tmplast->recency = NON_RESIDENT;
+                   
+    List_Delete(LIRSCache->CacheList->Hirs);
+    tmplast->ListElem = nullptr;
+}
