@@ -12,7 +12,7 @@ struct QueueElem {
     int key;
 };
 
-struct QueueElem* queue_node_create(int key, struct Queue* top);
+struct QueueElem* queue_node_create(int key, struct Queue* Queue);
 
 int test1(void);
 
