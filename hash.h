@@ -17,7 +17,7 @@ struct HashTableElem {
     struct HashTableElem *next;
     struct HashTableElem *prev;
     int key;
-    struct Queue *QueueElem; 
+    struct QueueElem *QueueElem; 
     int recency;
     struct Cache_Elem_t* CacheElem;
 };
@@ -52,7 +52,7 @@ struct QueueElem {
     int key;
 };
 
-struct Queue* queue_node_create(int key, struct Queue* top);
+struct QueueElem* queue_node_create(int key, struct Queue* top);
 
 int test1(void);
 
