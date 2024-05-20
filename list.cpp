@@ -238,4 +238,30 @@ void List_Dtor ( struct List_t *list )
     }
 }
 
+void snatch_list_elem ( struct Cache_Elem_t *elem )
+{
+    assert ( list != nullptr );
+
+    Cache_Elem_t *new_elem = elem->next;
+
+    elem->next->prev = elem->prev;
+
+    elem->prev->next = new_elem;
+
+    elem->prev = nullptr;
+    elem->next = nullptr;
+}
+
+void lift_list_elem ( struct List_t *list, struct Cache_Elem_t *elem )
+{
+    assert ( list != nullptr );
+    assert ( elem != nullptr );
+
+    List_Insert ( list, elem->code );
+    snatch_list_elem ( elem );
+
+}
+
+
+
 

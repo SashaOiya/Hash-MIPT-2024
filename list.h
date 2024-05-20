@@ -58,5 +58,8 @@ void Graph_Dump_Body  ( const struct List_t  *list, FILE *dot );
 void List_Dtor  ( struct List_t  *list  );
 void Cache_Dtor ( struct Cache_t *cache );
 
+void lift_list_elem ( struct List_t *list, struct Cache_Elem_t *elem );
+void snatch_list_elem ( struct Cache_Elem_t *elem );
+
 
 #endif      // LIST
