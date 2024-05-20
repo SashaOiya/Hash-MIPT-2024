@@ -27,8 +27,8 @@ struct Cache_Elem_t {
 
 struct List_t {
     int list_size = 0;
-    Cache_Elem_t *bottom = nullptr;
-    Cache_Elem_t *top = nullptr;
+    Cache_Elem_t *tail = nullptr;
+    Cache_Elem_t *head = nullptr;
 };
 
 struct Cache_t {
@@ -57,6 +57,9 @@ void Graph_Dump_Body  ( const struct List_t  *list, FILE *dot );
 
 void List_Dtor  ( struct List_t  *list  );
 void Cache_Dtor ( struct Cache_t *cache );
+
+void lift_list_elem ( struct List_t *list, struct Cache_Elem_t *elem );
+void snatch_list_elem ( struct Cache_Elem_t *elem );
 
 
 #endif      // LIST

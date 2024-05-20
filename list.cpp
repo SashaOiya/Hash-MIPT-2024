@@ -1,4 +1,5 @@
 #include "list.h"
+//#include "log.h"
 
 static const int DUMP_COUNTER = 100;
 
@@ -32,15 +33,15 @@ List_Error_t List_Ctor ( struct List_t **list )
 
     (*list)->list_size = START_BUFFER_SIZE;
 
-    (*list)->bottom = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-    if ( !((*list)->bottom) ) {
+    (*list)->tail = (Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+    if ( !((*list)->tail) ) {
         free ( *list );
-        free ( (*list)->bottom );
+        free ( (*list)->tail );
 
         return ERR_CALLO;
     }
 
-    (*list)->top = (*list)->bottom;
+    (*list)->head = (*list)->tail;
 
     return OK;
 }
@@ -52,16 +53,16 @@ List_Error_t List_Insert ( struct List_t *list, int value )
 
     ++list->list_size;
 
-    list->top->next = ( Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
-    if ( !(list->top->next) ) {
-        free ( list->top->next );
+    list->head->next = ( Cache_Elem_t *)calloc ( 1, sizeof ( Cache_Elem_t ) );
+    if ( !(list->head->next) ) {
+        free ( list->head->next );
 
         return ERR_CALLO;
     }
 
-    list->top->code = value;
-    list->top->next->prev = list->top;
-    list->top             = list->top->next;
+    list->head->code = value;
+    list->head->next->prev = list->head;
+    list->head             = list->head->next;
 
 
     return OK;
@@ -73,7 +74,7 @@ List_Error_t List_Swap ( struct Cache_Elem_t *lir_elem, struct Cache_Elem_t *hir
     assert ( hir_elem != nullptr );
 
     if ( lir_elem->next == nullptr || hir_elem->next == nullptr ) {
-        printf ( "WARNING : list top\n" );
+        printf ( "WARNING : list head\n" );
 
         return OK;
     }
@@ -120,12 +121,12 @@ void List_Delete ( struct List_t *list )
 
     --list->list_size;
 
-    list->bottom->code = POISON; //
-    list->bottom->prev = nullptr;
-    list->bottom = list->bottom->next;
+    list->tail->code = POISON; //
+    list->tail->prev = nullptr;
+    list->tail = list->tail->next;
 
-    free ( list->bottom->prev );
-    list->bottom->prev = nullptr;
+    free ( list->tail->prev );
+    list->tail->prev = nullptr;
 }
 
 void List_Text_Dump ( struct List_t *list, const char *list_name )  // color
@@ -133,14 +134,14 @@ void List_Text_Dump ( struct List_t *list, const char *list_name )  // color
     assert ( list != nullptr );
     assert ( list_name != nullptr );
 
-    printf ( "%s bottom [%p] :\n"
+    printf ( "%s tail [%p] :\n"
              "\t     value : %d"
              "\t     prev  : [%p]"
-             "\t     next  : [%p]\n", list_name, list->bottom, list->bottom->code, list->bottom->prev, list->bottom->next );
+             "\t     next  : [%p]\n", list_name, list->tail, list->tail->code, list->tail->prev, list->tail->next );
 
-    printf ( "%s top [%p] :\n"
+    printf ( "%s head [%p] :\n"
              "\t     value : %d"
-             "\t     prev  : [%p]\n", list_name, list->top, list->top->code, list->top->prev );
+             "\t     prev  : [%p]\n", list_name, list->head, list->head->code, list->head->prev );
 
     printf ( "size : %d\n\n", list->list_size );
 }
@@ -178,9 +179,9 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
     assert ( list != nullptr );
     assert ( dot  != nullptr );
 
-    fprintf ( dot, " \"%p\" ", list->bottom );
+    fprintf ( dot, " \"%p\" ", list->tail );
 
-    struct Cache_Elem_t *temp_list_elem = list->bottom;
+    struct Cache_Elem_t *temp_list_elem = list->tail;
     for ( int i = 0; i < list->list_size - 1; ++i ) {
         fprintf ( dot, "-> \"%p\" ", temp_list_elem );
         temp_list_elem = temp_list_elem->next;
@@ -190,15 +191,15 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
 
     if ( list->list_size == START_BUFFER_SIZE ) {
         fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
-                       " label = \"bottom: %d \"];\n ",list->bottom, list->bottom->code );
+                       " label = \"tail: %d \"];\n ",list->tail, list->tail->code );
         return;
     }
 
     fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
-                   " label = \"bottom: %d | next: %d\"];\n ",list->bottom, list->bottom->code,
-                                                                       list->bottom->next->code );
+                   " label = \"tail: %d | next: %d\"];\n ",list->tail, list->tail->code,
+                                                                       list->tail->next->code );
 
-    temp_list_elem = list->bottom->next;
+    temp_list_elem = list->tail->next;
     for ( int i = 0; i < list->list_size - 2; ++i ) {
         fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
                        " label = \"data: %d | next: %d | prev: %d\"];\n ",temp_list_elem, temp_list_elem->code,
@@ -208,9 +209,9 @@ void Graph_Dump_Body ( const struct List_t *list, FILE *dot )
     }
 
     fprintf ( dot, " \"%p\" [shape = Mrecord, style = filled, fillcolor = lightpink "
-                   " label = \"top: %d | prev: %d\"];\n ",temp_list_elem, temp_list_elem->code,
+                   " label = \"head: %d | prev: %d\"];\n ",temp_list_elem, temp_list_elem->code,
                                                                            temp_list_elem->prev->code );
-    temp_list_elem = list->bottom;
+    temp_list_elem = list->tail;
     for ( int i = 0; i < list->list_size - 1; ++i ) {
         fprintf ( dot, "\"%p\" -> \"%p\";\n", temp_list_elem, temp_list_elem->next );
         temp_list_elem = temp_list_elem->next;
@@ -230,11 +231,35 @@ void List_Dtor ( struct List_t *list )
 {
     assert ( list != nullptr );
 
-    Cache_Elem_t *temp_list_elem = list->bottom;
+    Cache_Elem_t *temp_list_elem = list->tail;
     for ( int i = 0; i < list->list_size -1; ++i ) {
         temp_list_elem = temp_list_elem->next;
         free (temp_list_elem->prev );
     }
 }
+
+void snatch_list_elem ( struct Cache_Elem_t *elem )
+{
+
+    Cache_Elem_t *new_elem = elem->next;
+
+    elem->next->prev = elem->prev;
+
+    elem->prev->next = new_elem;
+
+    elem->prev = nullptr;
+    elem->next = nullptr;
+}
+
+void lift_list_elem ( struct List_t *list, struct Cache_Elem_t *elem )
+{
+    assert ( list != nullptr );
+    assert ( elem != nullptr );
+
+    List_Insert ( list, elem->code );
+    snatch_list_elem ( elem );
+
+}
+
 
 

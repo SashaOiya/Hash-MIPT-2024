@@ -5,8 +5,7 @@
 #include "hash.h"
 
 #define nullptr NULL
-#define Hirs hirs
-#define Lirs lirs
+
 
 struct LIRSCache* create_lirs_cache(struct Data* Data) 
 {
@@ -31,8 +30,8 @@ void set_lirs_cache(struct LIRSCache* LIRSCache, struct Data* Data)
     LIRSCache->HashTable->HashSize = Data->cachesize;
     LIRSCache->CacheList->cache_size = Data->cachesize;
 
-    LIRSCache->CacheList->Hirs->list_size = hirs_size;
-    LIRSCache->CacheList->Lirs->list_size = LIRSCache->CacheList->cache_size - hirs_size;
+    LIRSCache->CacheList->hirs->list_size = hirs_size;
+    LIRSCache->CacheList->lirs->list_size = LIRSCache->CacheList->cache_size - hirs_size;
 }
 
 int determine_hirs_size(int cachesize)
@@ -88,7 +87,7 @@ int process_request(struct LIRSCache* LIRSCache, int request)
            {
                delete_last_element_from_list(LIRSCache);
 
-               List_Insert(LIRSCache->CacheList->Hirs, tmph->ListElem->code);
+               List_Insert(LIRSCache->CacheList->hirs, tmph->ListElem->code);
                lift_queue_element(LIRSCache->Queue, tmph->QueueElem);
                chahging_state_and_pruning(LIRSCache, tmph);
            }
@@ -100,22 +99,22 @@ int process_request(struct LIRSCache* LIRSCache, int request)
         struct HashTableElem* newelem;
         newelem = hash_table_elem_create(request, LIRSCache->Queue, LIRSCache->HashTable);
 
-        if((LIRSCache->CacheList->Lirs->list_size) < (LIRSCache->CacheList->cache_size) - (LIRSCache->CacheList->Hirs->list_size))
+        if((LIRSCache->CacheList->Lirs->list_size) < (LIRSCache->CacheList->cache_size) - (LIRSCache->CacheList->hirs->list_size))
         {    
-            List_Insert(LIRSCache->CacheList->Lirs, request);
-            newelem->ListElem = LIRSCache->CacheList->Lirs->top;
+            List_Insert(LIRSCache->CacheList->lirs, request);
+            newelem->ListElem = LIRSCache->CacheList->lirs->head;
             newelem->recency = LIR;
-            ++LIRSCache->CacheList->Lirs->list_size;
+            ++LIRSCache->CacheList->lirs->list_size;
         }
         else  
         {
-            if((LIRSCache->CacheList->Hirs->list_size) < (LIRSCache->CacheList->cache_size) - (LIRSCache->CacheList->Lirs->list_size))
-                ++LIRSCache->CacheList->Hirs->list_size;
+            if((LIRSCache->CacheList->hirs->list_size) < (LIRSCache->CacheList->cache_size) - (LIRSCache->CacheList->lirs->list_size))
+                ++LIRSCache->CacheList->hirs->list_size;
             else
                 delete_last_element_from_list(LIRSCache);
                 
-            List_Insert(LIRSCache->CacheList->Lirs, request);
-            newelem->ListElem = LIRSCache->CacheList->Hirs->top;
+            List_Insert(LIRSCache->CacheList->lirs, request);
+            newelem->ListElem = LIRSCache->CacheList->hirs->tail;
             newelem->recency = HIR;     
         }
         
@@ -135,8 +134,8 @@ void chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTableEle
             tmph->QueueElem->state = LIR; //states of block is stored in QueueElem and HashTableElem and they are equal
             
         
-            snatch_list_element(LIRSCache->CacheList->Hirs, tmph->ListElem);//removes the specified element from the specified list
-            List_Insert(LIRSCache->CacheList->Lirs, tmph->ListElem->code);
+            snatch_list_elem(LIRSCache->CacheList->hirs, tmph->ListElem);//removes the specified element from the specified list
+            List_Insert(LIRSCache->CacheList->lirs, tmph->ListElem->code);
 
             struct HashTableElem* tmpbottom; //pointer to the queue bottom element
 
@@ -144,8 +143,8 @@ void chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTableEle
             tmpbottom->QueueElem->state = HIR; 
            
 
-            snatch_list_element(LIRSCache->CacheList->Lirs, tmpbottom->ListElem);//removes the specified element from the specified list
-            List_Insert(LIRSCache->CacheList->Hirs, tmpbottom->ListElem->code); 
+            snatch_list_elem(LIRSCache->CacheList->lirs, tmpbottom->ListElem);//removes the specified element from the specified list
+            List_Insert(LIRSCache->CacheList->hirs, tmpbottom->ListElem->code); 
 
             /*thus I changed the state of the resident HIR to LIR, removed it from the HIR list,
             added it to the LIR list and also changed the state of the least called LIR to HIR
@@ -156,16 +155,16 @@ void chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTableEle
         else
         {
             enqueue(LIRSCache->Queue, tmph->key);
-            lift_list_elem(LIRSCache->CacheList->Hirs, tmph->ListElem);
+            lift_list_elem(LIRSCache->CacheList->hirs, tmph->ListElem);
         }
 }
 
 void delete_last_element_from_list(struct LIRSCache* LIRSCache)
 {
     struct HashTableElem* tmplast; //pointer to the bottom HIR element in the HIR list 
-    tmplast->ListElem = LIRSCache->CacheList->Hirs->bottom;
+    tmplast->ListElem = LIRSCache->CacheList->hirs->tail;
     tmplast->recency = NON_RESIDENT;
                    
-    List_Delete(LIRSCache->CacheList->Hirs);
+    List_Delete(LIRSCache->CacheList->hirs);
     tmplast->ListElem = nullptr;
 }
