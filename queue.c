@@ -16,6 +16,11 @@ struct Queue {  // Queue structure
     struct QueueElem* tail;
 };
 
+enum {
+    HIR,
+    LIR,
+};
+
 struct Queue* create_queue() {        // Creates a queue and returns a pointer to it
     struct Queue* Queue  = (struct Queue*)calloc(1, sizeof(struct Queue));
     assert(Queue);
@@ -30,7 +35,7 @@ struct Queue* create_queue() {        // Creates a queue and returns a pointer t
 }
 
 // Destructor
-void destroy_queue(struct Queue* queue) {
+void destroy_queue(struct Queue* Queue) {
     if (Queue == NULL) {
         return;
     }
@@ -42,14 +47,14 @@ void destroy_queue(struct Queue* queue) {
         free(temp);
     }
 
-    free(queue);
+    free(Queue);
 }
 
 // Takes a key element. Adds it to the beginning of the queue. Updates pointers to neighboring elements
 struct QueueElem* queue_nod_create(int key, struct Queue* Queue) {
 
-    struct Queue* newElement = (struct QueueElem*)calloc(1, sizeof(struct QueueElem));
-    assert(newElement)
+    struct QueueElem* newElement = (struct QueueElem*)calloc(1, sizeof(struct QueueElem));
+    assert(newElement);
 
     newElement->key = key;
 
@@ -124,36 +129,34 @@ void lift_queue_element(struct Queue* Queue, struct QueueElem* element) {
 }
 
 // Clears the queue from elements with a specific status and attribute
-void queue_pruning(struct Queue* queue) {
-    struct QueueElem* current = queue->tail;
+void queue_pruning(struct Queue* Queue, struct HashTable* HashTable) {
+    struct QueueElem* current = Queue->tail;
 
     while (current != NULL && current->status == LIR) {
         struct QueueElem* temp = current;
         current = current->prev;
 
         if (temp->recency == RESIDENT) {
-            if (temp == queue->head) {
-                queue->head = NULL;
-                queue->tail = NULL;
+            if (temp == Queue->head) {
+                Queue->head = NULL;
+                Queue->tail = NULL;
             } else {
                 temp->prev->next = NULL;
-                queue->tail = temp->prev;
+                Queue->tail = temp->prev;
             }
 
             free(temp);
         } else {
-            delete_hash_table_elem(hashtable, temp->key);
-            if (temp == queue->head) {
-                queue->head = NULL;
-                queue->tail = NULL;
+            delete_hash_table_elem(HashTable, temp->key);
+            if (temp == Queue->head) {
+                Queue->head = NULL;
+                Queue->tail = NULL;
             } else {
                 temp->prev->next = NULL;
-                queue->tail = temp->prev;
+                Queue->tail = temp->prev;
             }
 
             free(temp);
         }
     }
 }
-
-    
