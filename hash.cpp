@@ -85,6 +85,7 @@ void delete_hash_table_elem(struct HashTableElem* ElemForDelete, struct HashTabl
     else {
         ElemForDelete->prev->next = ElemForDelete->next;
     }
+    free(ElemForDelete);
 }
 
 void hash_dtor(struct HashTable* HashTable) {
