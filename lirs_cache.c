@@ -1,29 +1,49 @@
 #include "lirs_cache.h"
-#include "cache_list.h"
+#include "list.h"
 #include "queue.h"
 #include "hash.h"
+
+#define nullptr NULL
+#define Hirs hirs
+#define Lirs lirs
 
 struct LIRSCache* create_lirs_cache(struct Data* Data) 
 {
     struct LIRSCache* LIRSCache;
     struct HashTable* HashTAble;
-    struct List* CacheList;
+    struct List_t* CacheList;
     struct Queue* Queue;
 
     LIRSCache = (struct LIRSCache* ) calloc(1, sizeof(struct LIRSCache));
 
-    LIRSCache->CacheList = create_cache_list();
+    Cache_Ctor(LIRSCache->CacheList, Data->cachesize);
     LIRSCache->Queue = create_queue();
-    LIRSCache->HashTable = create_hash_table();
+    LIRSCache->HashTable = hash_table_create(Data->cachesize);
 
     return LIRSCache;
 }
 
+void set_lirs_cache(struct LIRSCache* LIRSCache, struct Data* Data)
+{
+    int hirs_size = 0;
+    hirs_size = determine_hirs_size(Data->cachesize); //determines size of list of Hirs based on input data
+    LIRSCache->HashTable->HashSize = Data->cashesize;
+    LIRSCache->CacheList->cache_size = Data->cachesize;
+
+    LIRSCache->CacheList->Hirs->list_size = hirs_size;
+    LIRSCache->CacheList->Lirs->list_size = LIRSCache->CacheList->cache_size - hirs_size;
+}
+
+int determine_hirs_size(int cachesize)
+{
+    return ((cachesize/100) + 1); //the size of Hirs list should be about 1% of the size of the whole cache
+}
+
 void destruct_lirs_cache(struct LIRSCache* LIRSCache)
 {
-    destruct_cache_list(LIRSCache->CacheList);
+    Cache_Dtor(LIRSCache->CacheList);
     destruct_queue(LIRSCache->Queue);
-    destruct_hash_table(LIRSCache->HashTable);
+    hash_dtor(LIRSCache->HashTable);
 
     LIRSCache->CacheList = nullptr;
     LIRSCache->Queue = nullptr;
@@ -49,7 +69,7 @@ int process_request(struct LIRSCache* LIRSCache, int request)
        if(tmph->QueueElem != nullptr && tmph->QueueElem->state == LIR)
        {
            lift_queue_element(LIRSCache->Queue, tmph); //advanced function "enqueue()"
-           if(tmph->QueueElem == LIRSCache->Queue->bottom)
+           if(tmph->QueueElem == LIRSCache->Queue->tail)
                queue_pruning(); //"pruning queue until there is a LIR at the bottom"
 
            ++cachehit;
@@ -139,7 +159,7 @@ void chahging_state_and_pruning(struct LIRSCache* LIRSCache, struct HashTAbleEle
         }
 }
 
-void delete_last_element_from_list(struct LIRSCashe* LIRSCache);
+void delete_last_element_from_list(struct LIRSCashe* LIRSCache)
 {
     struct HashTAbleElem* tmplast; //pointer to the tail HIR element in the HIR list 
     tmplast = LIRSCache->CacheList->Hirs->tail;

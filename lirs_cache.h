@@ -2,7 +2,7 @@
 
 struct LIRSCache 
 {
-    struct List* Cache_t;
+    struct List_t* CacheList;
     struct HashTable* HashTable;
     struct Queue* Queue;
 };
