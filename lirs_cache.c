@@ -42,7 +42,7 @@ int determine_hirs_size(int cachesize)
 void destruct_lirs_cache(struct LIRSCache* LIRSCache)
 {
     Cache_Dtor(LIRSCache->CacheList);
-    destruct_queue(LIRSCache->Queue);
+    destroy_queue(LIRSCache->Queue);
     hash_dtor(LIRSCache->HashTable);
 
     LIRSCache->CacheList = nullptr;
