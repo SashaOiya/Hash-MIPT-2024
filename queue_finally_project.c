@@ -3,7 +3,7 @@
 #include "queue.h"
 #include "hash.h"
 
-struct QueueElem {
+struct QueueElem { // Structure of queue elements
     int key;
     struct QueueElem* next;
     struct QueueElem* prev;
@@ -11,13 +11,13 @@ struct QueueElem {
     int status;  // hir or lir
 };
 
-struct Queue {
+struct Queue {  // Queue structure
     struct QueueElem* head;
     struct QueueElem* tail;
 };
 
-struct Queue* create_queue() {
-    struct Queue* Queue  = (struct Queue*)сalloc(1, sizeof(struct Queue));
+struct Queue* create_queue() {        // Creates a queue and returns a pointer to it
+    struct Queue* Queue  = (struct Queue*)calloc(1, sizeof(struct Queue));
     assert(Queue);
     if (Queue == NULL) {
         return NULL;
@@ -29,7 +29,7 @@ struct Queue* create_queue() {
     return Queue;
 }
 
-
+// Destructor
 void destroy_queue(struct Queue* queue) {
     if (Queue == NULL) {
         return;
@@ -45,6 +45,7 @@ void destroy_queue(struct Queue* queue) {
     free(queue);
 }
 
+// Takes a key element. Adds it to the beginning of the queue. Updates pointers to neighboring elements
 struct QueueElem* queue_nod_create(int key, struct Queue* Queue) {
 
     struct Queue* newElement = (struct QueueElem*)calloc(1, sizeof(struct QueueElem));
@@ -66,8 +67,8 @@ struct QueueElem* queue_nod_create(int key, struct Queue* Queue) {
 
     return newElement;
 }
-}
 
+// Adds a new element to the end of the queue
 void enqueue(struct Queue* Queue, int key) {
     struct QueueElem* new_node = (struct QueueElem*)calloc(1, sizeof(struct QueueElem));
     assert(new_node);
@@ -84,6 +85,7 @@ void enqueue(struct Queue* Queue, int key) {
     }
 }
 
+// Removes an element from the beginning of the queue
 void dequeue(struct Queue* Queue) {
     if (Queue->head == NULL) {
         return;
@@ -101,8 +103,7 @@ void dequeue(struct Queue* Queue) {
     free(temp);
 }
 
-
-
+// Lifts the specified element in the queue so that this element becomes the new head element
 void lift_queue_element(struct Queue* Queue, struct QueueElem* element) {
     if (element == Queue->head) {
         return;
@@ -122,6 +123,7 @@ void lift_queue_element(struct Queue* Queue, struct QueueElem* element) {
     Queue->head = element;
 }
 
+// Clears the queue from elements with a specific status and attribute
 void queue_pruning(struct Queue* queue) {
     struct QueueElem* current = queue->tail;
 
@@ -153,3 +155,5 @@ void queue_pruning(struct Queue* queue) {
         }
     }
 }
+
+    
