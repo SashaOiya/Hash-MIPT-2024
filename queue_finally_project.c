@@ -16,6 +16,34 @@ struct Queue {
     struct QueueElem* tail;
 };
 
+struct Queue* create_queue() {
+    struct Queue* Queue  = (struct Queue*)сalloc(1, sizeof(struct Queue));
+    assert(Queue);
+    if (Queue == NULL) {
+        return NULL;
+    }
+
+    Queue->head = NULL;
+    Queue->tail = NULL;
+
+    return Queue;
+}
+
+
+void destroy_queue(struct Queue* queue) {
+    if (Queue == NULL) {
+        return;
+    }
+
+    struct QueueElem* current = Queue->head;
+    while (current != NULL) {
+        struct QueueElem* temp = current;
+        current = current->next;
+        free(temp);
+    }
+
+    free(queue);
+}
 
 struct QueueElem* queue_nod_create(int key, struct Queue* Queue) {
 
