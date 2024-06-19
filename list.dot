@@ -1,0 +1,12 @@
+digraph G { 
+rankdir = LR;
+node [shape = record];
+ "00C81828" -> "00C81828" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
+ "00C81828" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 15 | next: 0"];
+  "00C817E0" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 15"];
+ "00C81828" -> "00C817E0";
+ "00C81840" -> "00C81840" [arrowsize = 0.0, weight = 10000, color = "#FFFFFF"];
+ "00C81840" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "tail: 10 | next: 0"];
+  "00C818A0" [shape = Mrecord, style = filled, fillcolor = lightpink  label = "head: 0 | prev: 10"];
+ "00C81840" -> "00C818A0";
+}
